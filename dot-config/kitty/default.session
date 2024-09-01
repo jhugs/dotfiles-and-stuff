@@ -1,6 +1,0 @@
-layout splits
-cd ~/Wistia/wistia
-launch
-launch --location=hsplit
-launch --location=vsplit
-resize_window shorter 12

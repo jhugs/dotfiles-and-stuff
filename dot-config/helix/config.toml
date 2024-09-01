@@ -1,0 +1,29 @@
+theme = "current_theme"
+
+[editor]
+line-number = "relative"
+mouse = false
+bufferline = "multiple"
+rulers = [80]
+
+[keys.normal]
+esc = ["collapse_selection", "keep_primary_selection"]
+A-r = ":reload-all"
+
+[keys.normal."space"]
+o = "file_picker_in_current_buffer_directory"
+W = ":wa!"
+c = ":bc!"
+C = ":bca!"
+
+[keys.normal.";"]
+b = ":sh hx_ide blame"
+e = ":sh hx_ide explorer"
+t = ":sh hx_ide test"
+s = ":sh hx_ide search"
+p = ":sh hx_ide pane"
+l = ":sh hx_ide lint"
+f = ":sh hx_ide cfp"
+
+[editor.cursor-shape]
+insert = "bar"

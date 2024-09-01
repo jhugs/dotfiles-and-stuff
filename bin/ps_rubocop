@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'colorize'
+ 
+puts "ps_rubocop: linting...".yellow
+
+output = `ps_gda | ag "\\.(rb)" | xargs -I% bundle exec rubocop -a %`
+unless $?.success?
+	puts output.red
+end
+
+puts "ps_rubocop: done.".yellow

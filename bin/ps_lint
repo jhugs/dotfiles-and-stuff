@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'colorize'
+ 
+puts "ps_lint: linting...".yellow
+
+output = `ps_gda | ag "\\.(ts|js|jsx|tsx)" | xargs -I% eslint_d --fix %`
+unless $?.success?
+	puts output.red
+end
+
+puts "ps_lint: done.".yellow

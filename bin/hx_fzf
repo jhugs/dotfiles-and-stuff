@@ -1,0 +1,18 @@
+#!/bin/bash
+
+MAIN_ID=$1
+OPEN_ID=$2
+
+shift 2
+
+RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+INITIAL_QUERY="${*:-}"
+: | fzf --ansi --disabled --query "$INITIAL_QUERY" \
+    --bind "start:reload:$RG_PREFIX {q}" \
+    --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+    --delimiter : \
+    --preview 'bat --color=always {1} --highlight-line {2}' \
+    --preview-window 'right,50%,border-left,+{2}+3/3,~3' \
+    --bind 'enter:become(echo {1}:{2})' |
+    xargs -I% kitty @ send-text -m "id:$MAIN_ID" ':open % \r' && kitty @ close-window -m "id:$OPEN_ID"
+    

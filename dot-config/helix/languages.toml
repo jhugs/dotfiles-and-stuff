@@ -1,0 +1,48 @@
+[language-server.eslint]
+command = "vscode-eslint-language-server"
+args = ['--stdio']
+
+[language-server.solargraph.config]
+diagnostics = true
+formatting = false
+
+[language-server.eslint.config]
+ codeAction = { disableRuleComment = { enable = true, location = "separateLine" }, showDocumentation = { enable = true } }
+ codeActionOnSave = { mode = "all" }
+ experimental = { useFlatConfig = false }
+ nodePath = ""
+ problems = { shortenToSingleLine = false }
+ rulesCustomizations = []
+ run = "onType"
+ validate = "on"
+ workingDirectory = { mode = "auto" }
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "typescript"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "javascript"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "jsx"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "tsx"
+auto-format = true
+
+[[language]]
+language-servers = [{name='solargraph'}]
+name = "ruby"
+formatter = { command = "rubocop", args = ["--stdin", "foo.rb", "-a", "--stderr", "--fail-level", "fatal", "--server"] }
+auto-format = true

@@ -19,38 +19,28 @@ def pane_prefix
   'hx_ide_pane'
 end
 
-def kitty_active_os_window
-  JSON.parse(`kitty @ ls`, { symbolize_names: true }).find do |os_window|
-    os_window[:is_active]
-  end
+def open_pane_id(location = 'hsplit')
+  ENV["HX_IDE_#{ENV['KITTY_WINDOW_ID']}_#{location.upcase}"]
 end
 
-def kitty_active_tab
-  kitty_active_os_window[:tabs].find { |tab| tab[:is_active] }
+def update_open_pane_id(id, location)
+  ENV["HX_IDE_#{ENV['KITTY_WINDOW_ID']}_#{location.upcase}"] = id
+  id
 end
 
-def kitty_active_window
-  kitty_active_tab[:windows].find { |window| window[:is_active] }
-end
-
-def file_attributes
-  file_text = `kitty @ get-text -m "id:#{kitty_active_window[:id]}"`
+def file_attributes(id)
+  file_text = `kitty @ get-text -m "id:#{id}"`
   status_line = file_text.match(/(?:NOR|INS|SEL)\s+[\u{2800}-\u{28FF}]*\s+(\S*)\s[^│]* (\d+):*.*/)
   file_name = status_line[1]
 
   {
-    status_line: status_line,
-    file_name: file_name,
+    status_line:,
+    file_name:,
     line_number: status_line[2],
     basedir: `dirname "#{file_name}"`,
     basename: `basename "#{file_name}"`,
     extension: file_name.split('.').last
   }
-end
-
-def open_pane_id(location = 'hsplit')
-  pane = kitty_active_tab[:windows].find { |windows| windows[:title] == "#{pane_prefix}:#{location}" }
-  pane[:id] if pane
 end
 
 def pane_command(k_command:, command:, pane_id:)
@@ -59,31 +49,32 @@ end
 
 def send_keys(keys:, pane_id:)
   keys.each do |key_strokes|
-    pane_command(k_command: 'send-key', command: key_strokes, pane_id: pane_id)
+    pane_command(k_command: 'send-key', command: key_strokes, pane_id:)
   end
 end
 
 def launch_pane(command: '', hold: false, location: 'before', keep_focus: false)
-  `kitty @ launch \
+  update_open_pane_id(`kitty @ launch \
       --allow-remote-control  \
       --location=#{location}  \
       --cwd=current           \
       --bias=30 \
       #{keep_focus ? '--keep-focus' : ''} \
       --title="#{pane_prefix}:#{location}" #{hold ? '--hold' : ''} #{command}\
-    `
+    `, location)
 end
 
 def split_pane(launch_command: '', command: '', hold: false, location: 'before', keep_focus: false)
   if (pane_id = open_pane_id(location))
-    send_keys(keys: ['ctrl+u', 'ctrl+l'], pane_id: pane_id)
+    send_keys(keys: ['ctrl+u', 'ctrl+l'], pane_id:)
   else
     pane_id = launch_pane(
       command: launch_command,
-      hold: hold,
-      location: location,
-      keep_focus: keep_focus
+      hold:,
+      location:,
+      keep_focus:
     )
+    update_open_pane_id(pane_id, location)
 
     return pane_id unless launch_command.strip.empty?
   end
@@ -94,8 +85,8 @@ def split_pane(launch_command: '', command: '', hold: false, location: 'before',
     unless command.strip.empty?
       pane_command(
         k_command: 'send-text',
-        command: command,
-        pane_id: pane_id
+        command:,
+        pane_id:
       )
     end
   end
@@ -104,7 +95,8 @@ def split_pane(launch_command: '', command: '', hold: false, location: 'before',
 end
 
 def handle_input(input)
-  file_attrs = file_attributes
+  main_id = ENV['KITTY_WINDOW_ID']
+  file_attrs = file_attributes(main_id)
 
   case input
   when 'blame'
@@ -126,7 +118,7 @@ def handle_input(input)
     split_pane(hold: true, location: 'hsplit') do |id|
       pane_command(
         k_command: 'send-text',
-        command: "hx_fzf #{kitty_active_window[:id]} #{id} \r",
+        command: "hx_fzf #{main_id} #{id} \r",
         pane_id: id
       )
     end

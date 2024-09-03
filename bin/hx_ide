@@ -3,7 +3,17 @@
 
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
 
-require 'json'
+require 'yaml'
+
+VARS_FILE_PATH = File.join(Dir.home, '.hx_ide_vars.yml')
+
+def check_vars_file
+  return if File.exist?(VARS_FILE_PATH)
+
+  File.open(VARS_FILE_PATH, 'w') do |file|
+    file.write({})
+  end
+end
 
 def test_command_map
   {
@@ -19,13 +29,32 @@ def pane_prefix
   'hx_ide_pane'
 end
 
-def open_pane_id(location = 'hsplit')
-  ENV["HX_IDE_#{ENV['KITTY_WINDOW_ID']}_#{location.upcase}"]
+def executing_pane_id
+  ENV['KITTY_WINDOW_ID']
 end
 
-def update_open_pane_id(id, location)
-  ENV["HX_IDE_#{ENV['KITTY_WINDOW_ID']}_#{location.upcase}"] = id
-  id
+def open_pane_id(location = 'hsplit')
+  vars_hash = YAML.load_file(VARS_FILE_PATH) || {}
+  id = vars_hash["#{executing_pane_id}_#{location}".to_sym]
+
+  if `kitty @ ls --match="id:#{id}"`.empty?
+    update_open_pane_id(id: nil, location:)
+  else
+    id&.to_i
+  end
+end
+
+def update_open_pane_id(location:, id: nil)
+  vars_hash = YAML.load_file(VARS_FILE_PATH) || {}
+  key = "#{executing_pane_id}_#{location}".to_sym
+  if id
+    vars_hash[key] = id
+  else
+    vars_hash&.delete(key)
+  end
+  File.open(VARS_FILE_PATH, 'w') { |file| file.write(vars_hash.to_yaml) }
+
+  id&.to_i
 end
 
 def file_attributes(id)
@@ -54,14 +83,14 @@ def send_keys(keys:, pane_id:)
 end
 
 def launch_pane(command: '', hold: false, location: 'before', keep_focus: false)
-  update_open_pane_id(`kitty @ launch \
+  update_open_pane_id(id: `kitty @ launch \
       --allow-remote-control  \
       --location=#{location}  \
       --cwd=current           \
       --bias=30 \
       #{keep_focus ? '--keep-focus' : ''} \
       --title="#{pane_prefix}:#{location}" #{hold ? '--hold' : ''} #{command}\
-    `, location)
+    `, location:)
 end
 
 def split_pane(launch_command: '', command: '', hold: false, location: 'before', keep_focus: false)
@@ -74,7 +103,7 @@ def split_pane(launch_command: '', command: '', hold: false, location: 'before',
       location:,
       keep_focus:
     )
-    update_open_pane_id(pane_id, location)
+    update_open_pane_id(id: pane_id, location:)
 
     return pane_id unless launch_command.strip.empty?
   end
@@ -95,6 +124,8 @@ def split_pane(launch_command: '', command: '', hold: false, location: 'before',
 end
 
 def handle_input(input)
+  check_vars_file
+
   main_id = ENV['KITTY_WINDOW_ID']
   file_attrs = file_attributes(main_id)
 
@@ -102,7 +133,7 @@ def handle_input(input)
   when 'blame'
     split_pane(
       location: 'hsplit',
-      launch_command: "tig blame #{file_attrs[:file_name]} +#{file_attrs[:line_number]}"
+      command: "tig blame #{file_attrs[:file_name]} +#{file_attrs[:line_number]} \r"
     )
   when 'test'
     extension = file_attrs[:extension]

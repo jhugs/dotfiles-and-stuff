@@ -4,6 +4,7 @@
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
 
 require 'json'
+require 'open3'
 
 def test_command_map
   {
@@ -23,16 +24,14 @@ def executing_pane_id
   ENV['KITTY_WINDOW_ID']
 end
 
+def open_panes
+  result = JSON.parse `kitty @ ls --match-tab="state:active"`
+  result.first['tabs'].first['windows']
+end
+
 def open_pane_id(location = 'hsplit')
   title = "#{pane_prefix}:#{location}"
-  result = `kitty @ ls --match="title:#{title}"`
-  open_pane = if result.empty?
-                nil
-              else
-                JSON.parse(result)&.first&.[]('tabs')&.first&.[]('windows')&.find do |window|
-                  window['title'] == title
-                end
-              end
+  open_pane = open_panes.find { |pane| pane['title'] == title }
   open_pane['id'] if open_pane
 end
 

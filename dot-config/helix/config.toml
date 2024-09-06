@@ -17,13 +17,13 @@ c = ":bc!"
 C = ":bca!"
 
 [keys.normal.";"]
-b = ":sh hx_ide blame"
-e = ":sh hx_ide explorer"
-t = ":sh hx_ide test"
-s = ":sh hx_ide search"
-p = ":sh hx_ide pane"
-l = ":sh hx_ide lint"
-f = ":sh hx_ide cfp"
+b = ":sh hx_ide_wez blame"
+e = ":sh hx_ide_wez explorer"
+t = ":sh hx_ide_wez test"
+s = ":sh hx_ide_wez search"
+p = ":sh hx_ide_wez pane"
+l = ":sh hx_ide_wez lint"
+f = ":sh hx_ide_wez cfp"
 
 [editor.cursor-shape]
 insert = "bar"

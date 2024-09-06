@@ -4,7 +4,6 @@
 # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
 
 require 'json'
-require 'open3'
 
 def test_command_map
   {

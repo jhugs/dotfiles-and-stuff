@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+DIRECTION_MAP = {
+  "down": 'bottom',
+  'left': 'left'
+}.freeze
+
+def test_command_map
+  {
+    rb: 'bin/rspec',
+    js: 'yarn test',
+    jsx: 'yarn test',
+    ts: 'yarn test',
+    tsx: 'yarn test'
+  }
+end
+
+def get_pane(direction:, percent: 30)
+  pane_id = `wezterm cli get-pane-direction #{direction}`
+  return pane_id unless pane_id.empty?
+
+  `wezterm cli split-pane --#{DIRECTION_MAP[direction.to_sym]} --percent=#{percent}`
+end
+
+def activate_pane(pane_id:)
+  `wezterm cli activate-pane --pane-id=#{pane_id}`
+end
+
+def send_text(text:, pane_id:, kill_on_exit: false, activate: true)
+  `echo "#{text} #{kill_on_exit ? '; wezterm cli kill-pane' : ''}" | \
+  wezterm cli send-text --no-paste --pane-id=#{pane_id}`
+  activate_pane(pane_id:) if activate
+end
+
+def file_attributes
+  file_text = `wezterm cli get-text`
+  status_line = file_text.match(/(?:NOR|INS|SEL)\s+[\u{2800}-\u{28FF}]*\s+(\S*)\s[^│]* (\d+):*.*/)
+  file_name = status_line[1].strip
+
+  {
+    status_line:,
+    file_name:,
+    line_number: status_line[2].strip,
+    basedir: `dirname "#{file_name}"`.strip,
+    basename: `basename "#{file_name}"`.strip,
+    extension: file_name.split('.').last&.strip
+  }
+end
+
+def handle_input(input)
+  file_attrs = file_attributes
+
+  case input
+  when 'blame'
+    pane_id = get_pane(direction: 'down')
+    send_text(text: "tig blame #{file_attrs[:file_name]} +#{file_attrs[:line_number]}", pane_id:, kill_on_exit: true)
+  when 'test'
+    extension = file_attrs[:extension]
+    command = test_command_map[extension.to_sym]
+    if command.nil?
+      puts "Invalid file extension: #{extension}"
+    else
+      pane_id = get_pane(direction: 'down')
+      send_text(text: "#{command} #{file_attrs[:file_name]}", pane_id:)
+    end
+  when 'explorer'
+    pane_id = get_pane(direction: 'left')
+    send_text(text: "broot #{file_attrs[:basedir]} ", kill_on_exit: true, pane_id:)
+  when 'pane'
+    pane_id = get_pane(direction: 'down')
+    activate_pane(pane_id:)
+  when 'lint'
+    pane_id = get_pane(direction: 'down')
+    send_text(text: "eslint_d #{file_attrs[:file_name]} --fix", pane_id:)
+  when 'cfp'
+    `echo #{file_attrs[:file_name]} | pbcopy`
+  else
+    # for easily testing method output
+    puts send(input)
+  end
+end
+
+handle_input ARGV[0]

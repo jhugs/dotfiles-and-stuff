@@ -18,6 +18,7 @@ C = ":bca!"
 
 [keys.normal.";"]
 b = ":sh hx_ide_wez blame"
+m = ":sh hx_ide_wez md-preview"
 e = ":sh hx_ide_wez explorer"
 t = ":sh hx_ide_wez test"
 s = ":sh hx_ide_wez search"

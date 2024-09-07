@@ -3,7 +3,9 @@
 
 DIRECTION_MAP = {
   "down": 'bottom',
-  'left': 'left'
+  'left': 'left',
+  'right': 'right',
+  'up': 'top'
 }.freeze
 
 def test_command_map
@@ -67,6 +69,13 @@ def handle_input(input)
   when 'explorer'
     pane_id = get_pane(direction: 'left')
     send_text(text: "broot #{file_attrs[:basedir]} ", kill_on_exit: true, pane_id:)
+  when 'md-preview'
+    if file_attrs[:extension] != 'md'
+      puts 'Invalid file extension'
+    else
+      pane_id = get_pane(direction: 'right', percent: 50)
+      send_text(text: "glow #{file_attrs[:file_name]} -p", kill_on_exit: true, pane_id:)
+    end
   when 'pane'
     pane_id = get_pane(direction: 'down')
     activate_pane(pane_id:)

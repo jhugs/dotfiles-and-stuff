@@ -88,15 +88,15 @@ end
 def file_attributes(id)
   file_text = `kitty @ get-text -m "id:#{id}"`
   status_line = file_text.match(/(?:NOR|INS|SEL)\s+[\u{2800}-\u{28FF}]*\s+(\S*)\s[^│]* (\d+):*.*/)
-  file_name = status_line[1]
+  file_name = status_line[1].strip
 
   {
     status_line:,
     file_name:,
     line_number: status_line[2],
-    basedir: `dirname "#{file_name}"`,
-    basename: `basename "#{file_name}"`,
-    extension: file_name.split('.').last
+    basedir: `dirname "#{file_name}"`.strip,
+    basename: `basename "#{file_name}"`.strip,
+    extension: file_name.split('.').last.strip
   }
 end
 
@@ -119,7 +119,7 @@ def handle_input(input)
       split_pane(hold: true, location: 'hsplit', command: "#{command} #{file_attrs[:file_name]} \r")
     end
   when 'explorer'
-    split_pane(launch_command: "broot #{file_attrs[:basedir]}")
+    split_pane(command: "broot #{file_attrs[:basedir]} ; kitty @ close-window \r")
   when 'search'
     split_pane(hold: true, location: 'hsplit') do |id|
       pane_command(

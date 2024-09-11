@@ -11,9 +11,17 @@ return {
   window_frame = {
     font = wezterm.font { family = 'Noto Sans', weight = 'Regular' },
   },
-  window_background_image = 'Users/joshhughes/.config/wezterm/runes.png',
-  window_background_image_hsb = {
-    brightness = 0.1
+  background = {
+    {
+      source = {
+        File = 'Users/joshhughes/.config/wezterm/runes.png',
+      },
+      vertical_align = "Top",
+      horizontal_align= "Center",
+      hsb = {
+        brightness = 0.05
+      },
+    }
   },
   leader = { key = 'h', mods = 'CMD', timeout_milliseconds = 2000 },
   disable_default_key_bindings = true,

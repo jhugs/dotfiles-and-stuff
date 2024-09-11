@@ -7,6 +7,7 @@ return {
   inactive_pane_hsb = { saturation = 0.7, brightness = 0.7 },
   color_scheme = "Ayu Mirage (Gogh)",
   font = wezterm.font("Hack"),
+  font_size = 14.0,
   hide_tab_bar_if_only_one_tab = true,
   window_frame = {
     font = wezterm.font { family = 'Noto Sans', weight = 'Regular' },
@@ -26,8 +27,8 @@ return {
   leader = { key = 'h', mods = 'CMD', timeout_milliseconds = 2000 },
   disable_default_key_bindings = true,
   keys = {
-    { key = 'h',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(1) },
-    { key = 'l',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(-1) },
+    { key = 'h',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(-1) },
+    { key = 'l',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(1) },
     { key = 'Enter',      mods = 'CMD',         action = act.ActivateCopyMode },
     { key = 'R',          mods = 'SHIFT|CTRL',  action = act.ReloadConfiguration },
     { key = '+',          mods = 'CTRL',        action = act.IncreaseFontSize },

@@ -18,7 +18,7 @@ return {
         File = 'Users/joshhughes/.config/wezterm/runes.png',
       },
       vertical_align = "Top",
-      horizontal_align= "Center",
+      horizontal_align = "Center",
       hsb = {
         brightness = 0.05
       },
@@ -26,6 +26,24 @@ return {
   },
   leader = { key = 'h', mods = 'CMD', timeout_milliseconds = 2000 },
   disable_default_key_bindings = true,
+  key_tables = {
+    resize_pane = {
+      { key = 'LeftArrow',  action = act.AdjustPaneSize { 'Left', 1 } },
+      { key = 'h',          action = act.AdjustPaneSize { 'Left', 1 } },
+
+      { key = 'RightArrow', action = act.AdjustPaneSize { 'Right', 1 } },
+      { key = 'l',          action = act.AdjustPaneSize { 'Right', 1 } },
+
+      { key = 'UpArrow',    action = act.AdjustPaneSize { 'Up', 1 } },
+      { key = 'k',          action = act.AdjustPaneSize { 'Up', 1 } },
+
+      { key = 'DownArrow',  action = act.AdjustPaneSize { 'Down', 1 } },
+      { key = 'j',          action = act.AdjustPaneSize { 'Down', 1 } },
+
+      -- Cancel the mode by pressing escape
+      { key = 'Escape',     action = 'PopKeyTable' },
+    },
+  },
   keys = {
     { key = 'h',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(-1) },
     { key = 'l',          mods = 'CTRL|SHIFT',  action = act.ActivateTabRelative(1) },
@@ -42,6 +60,7 @@ return {
     { key = 'RightArrow', mods = 'SHIFT|CTRL',  action = act.ActivatePaneDirection 'Right' },
     { key = 'UpArrow',    mods = 'SHIFT|CTRL',  action = act.ActivatePaneDirection 'Up' },
     { key = 'DownArrow',  mods = 'SHIFT|CTRL',  action = act.ActivatePaneDirection 'Down' },
+    { key = 'r',          mods = 'CTRL|SHIFT',  action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false } },
     { key = 'f',          mods = 'CMD',         action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
     { key = 'd',          mods = 'CMD',         action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     { key = 'h',          mods = 'CMD',         action = act.ActivatePaneDirection 'Left' },
@@ -62,6 +81,5 @@ return {
             act.SendKey { key = 'L', mods = 'CTRL' }
           }
     },
-    { key = 'r', mods = 'LEADER', action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false } },
   }
 }

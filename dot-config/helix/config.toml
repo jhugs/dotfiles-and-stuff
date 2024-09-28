@@ -28,3 +28,7 @@ f = ":sh hx_ide_wez cfp"
 
 [editor.cursor-shape]
 insert = "bar"
+
+[editor.inline-diagnostics]
+cursor-line = "hint"
+other-lines = "error"

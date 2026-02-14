@@ -1,0 +1,149 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
+
+require 'json'
+
+def test_command_map
+  {
+    rb: 'bin/rspec',
+    js: 'yarn test',
+    jsx: 'yarn test',
+    ts: 'yarn test',
+    tsx: 'yarn test'
+  }
+end
+
+def pane_prefix
+  "hx_ide_pane_#{executing_pane_id}"
+end
+
+def executing_pane_id
+  ENV['KITTY_WINDOW_ID']
+end
+
+def open_panes
+  result = JSON.parse `kitty @ ls --match-tab="state:active"`
+  result.first['tabs'].first['windows']
+end
+
+def open_pane_id(location = 'hsplit')
+  title = "#{pane_prefix}:#{location}"
+  open_pane = open_panes.find { |pane| pane['title'] == title }
+  open_pane['id'] if open_pane
+end
+
+def pane_command(k_command:, command:, pane_id:)
+  `kitty @ #{k_command} --match="id:#{pane_id}" "#{command}"`
+end
+
+def send_keys(keys:, pane_id:)
+  keys.each do |key_strokes|
+    pane_command(k_command: 'send-key', command: key_strokes, pane_id:)
+  end
+end
+
+def launch_pane(command: '', hold: false, location: 'before', keep_focus: false)
+  `kitty @ launch \
+      --allow-remote-control  \
+      --location=#{location}  \
+      --cwd=current           \
+      --bias=30 \
+      #{keep_focus ? '--keep-focus' : ''} \
+      --title="#{pane_prefix}:#{location}" #{hold ? '--hold' : ''} #{command}\
+    `
+end
+
+def split_pane(launch_command: '', command: '', hold: false, location: 'before', keep_focus: false)
+  if (pane_id = open_pane_id(location))
+    send_keys(keys: ['ctrl+u', 'ctrl+l'], pane_id:)
+  else
+    pane_id = launch_pane(
+      command: launch_command,
+      hold:,
+      location:,
+      keep_focus:
+    )
+
+    return pane_id unless launch_command.strip.empty?
+  end
+
+  if block_given?
+    yield(pane_id)
+  else
+    unless command.strip.empty?
+      pane_command(
+        k_command: 'send-text',
+        command:,
+        pane_id:
+      )
+    end
+  end
+
+  pane_id
+end
+
+def file_attributes(id)
+  file_text = `kitty @ get-text -m "id:#{id}"`
+  status_line = file_text.match(/(?:NOR|INS|SEL)\s+[\u{2800}-\u{28FF}]*\s+(\S*)\s[^│]* (\d+):*.*/)
+  file_name = status_line[1].strip
+
+  {
+    status_line:,
+    file_name:,
+    line_number: status_line[2],
+    basedir: `dirname "#{file_name}"`.strip,
+    basename: `basename "#{file_name}"`.strip,
+    extension: file_name.split('.').last.strip
+  }
+end
+
+def handle_input(input)
+  main_id = ENV['KITTY_WINDOW_ID']
+  file_attrs = file_attributes(main_id)
+
+  case input
+  when 'blame'
+    split_pane(
+      location: 'hsplit',
+      command: "tig blame #{file_attrs[:file_name]} +#{file_attrs[:line_number]} \r"
+    )
+  when 'test'
+    extension = file_attrs[:extension]
+    command = test_command_map[extension.to_sym]
+    if command.nil?
+      puts "Invalid file extension: #{extension}"
+    else
+      split_pane(hold: true, location: 'hsplit', command: "#{command} #{file_attrs[:file_name]} \r")
+    end
+  when 'explorer'
+    split_pane(command: "broot #{file_attrs[:basedir]} ; kitty @ close-window \r")
+  when 'search'
+    split_pane(hold: true, location: 'hsplit') do |id|
+      pane_command(
+        k_command: 'send-text',
+        command: "hx_fzf #{main_id} #{id} \r",
+        pane_id: id
+      )
+    end
+  when 'pane'
+    split_pane(hold: true, location: 'hsplit')
+  when 'lint'
+    split_pane(
+      command: "eslint_d #{file_attrs[:file_name]} --fix \r",
+      hold: true,
+      location: 'hsplit',
+      keep_focus: true
+    )
+  when 'cfp'
+    `echo #{file_attrs[:file_name]} | pbcopy`
+  else
+    # for easily testing method output
+    puts send(input)
+  end
+end
+
+handle_input ARGV[0]
+
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity

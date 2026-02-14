@@ -1,0 +1,22 @@
+# BEGIN_KITTY_THEME
+# Ayu
+include current-theme.conf
+# END_KITTY_THEME
+
+enabled_layouts splits
+startup_session ./default.session
+shell .
+background_image ~/.config/kitty/runes.png
+background_image_layout cscaled
+background_tint .95
+macos_option_as_alt yes
+font_family          Hack Regular
+bold_font            Hack Bold
+italic_font          Hack Italic
+# font_family          Victor Mono Regular
+# bold_font            Victor Mono Bold
+# italic_font          Victor Mono Italic
+font_size           14.0
+disable_ligatures always
+allow_remote_control yes
+listen_on unix:/tmp/.kitty 

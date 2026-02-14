@@ -1,0 +1,56 @@
+[language-server.eslint]
+command = "vscode-eslint-language-server"
+args = ['--stdio']
+
+[language-server.ruby-lsp]
+command = "ruby-lsp"
+config = { diagnostics = true, formatting = true }
+
+[language-server.standardrb]
+command = "standardrb"
+args = [ "--lsp" ]
+
+[language-server.gopls]
+config = { hints = { "assignVariableType" = true, "compositeLiteralFields" = true, "compositeLiteralTypes" = true, "constantValues" = true, "functionTypeParameters" = true, "parameterNames" = true, "rangeVariableTypes" = true } }
+
+[language-server.eslint.config]
+ codeAction = { disableRuleComment = { enable = true, location = "separateLine" }, showDocumentation = { enable = true } }
+ codeActionOnSave = { mode = "all" }
+ experimental = { useFlatConfig = false }
+ nodePath = ""
+ problems = { shortenToSingleLine = false }
+ rulesCustomizations = []
+ run = "onType"
+ validate = "on"
+ workingDirectory = { mode = "auto" }
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "typescript"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "javascript"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "jsx"
+auto-format = true
+
+[[language]]
+language-servers = ['typescript-language-server']
+formatter = { command = "prettier", args = [ "--parser", "typescript" ] }
+name = "tsx"
+auto-format = true
+
+[[language]]
+language-servers = [{name='ruby-lsp'}, {name="standardrb", except-features=["format"]}]
+name = "ruby"
+# formatter = { command = "rubocop", args = ["--stdin", "foo.rb", "-a", "--stderr", "--fail-level", "fatal", "--server"] }
+# formatter = { command = "bundle", args = ["exec", "rubocop", "--stdin", "foo.rb", "-a", "--stderr", "--fail-level", "fatal"] }
+auto-format = true

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+maskfile=$HOME/dotfiles-and-stuff/maskfile.md 
+
+if [ -z $1 ];
+then
+	mask --maskfile $maskfile -h | sed -n '/SUBCOMMANDS/,$p' | sed 's/.*/\x1b[33m&\x1b[0m/'
+else
+	mask --maskfile $maskfile "$@"
+fi

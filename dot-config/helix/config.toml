@@ -1,0 +1,43 @@
+theme = "current_theme"
+
+[editor]
+bufferline = "multiple"
+jump-label-alphabet = "aoeuidhtnspgcrlmbkjvwfyqxz"
+line-number = "relative"
+mouse = false
+rulers = [80]
+
+[keys.normal]
+esc = ["collapse_selection", "keep_primary_selection"]
+A-r = ":reload-all"
+C-g = "goto_word"
+
+[keys.normal."space"]
+o = "file_picker_in_current_buffer_directory"
+W = ":wa!"
+c = ":bc!"
+C = ":bca!"
+
+[keys.normal.";"]
+b = ":sh hx_ide_wez blame"
+m = ":sh hx_ide_wez md-preview"
+e = ":sh hx_ide_wez explorer"
+t = ":sh hx_ide_wez test"
+s = ":sh hx_ide_wez search"
+p = ":sh hx_ide_wez pane"
+l = ":sh hx_ide_wez lint"
+f = ":sh hx_ide_wez cfp"
+
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.file-picker]
+git-ignore = false
+
+[editor.inline-diagnostics]
+cursor-line = "hint"
+other-lines = "error"
+
+[editor.lsp]
+display-inlay-hints = true
+

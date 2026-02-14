@@ -1,0 +1,6 @@
+# Source environment variables from fish configs (fish is the source of truth)
+for f in "$HOME/.config/fish/config.fish" "$HOME/.config/fish/conf.d/local.fish"; do
+    if [ -f "$f" ]; then
+        eval "$(grep '^export ' "$f")"
+    fi
+done

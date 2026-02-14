@@ -1,0 +1,8 @@
+[opener]
+helix = [
+  { run = "wezterm cli get-pane-direction right | xargs -I% wezterm cli send-text --no-paste --pane-id=% \":open $0\"\r && wezterm cli kill-pane"}
+]
+[open]
+prepend_rules = [
+  { name = "*", use = "helix"}
+]

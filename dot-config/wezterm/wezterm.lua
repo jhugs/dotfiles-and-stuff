@@ -4,6 +4,8 @@ local wezterm = require "wezterm"
 local act = wezterm.action
 
 return {
+  send_composed_key_when_left_alt_is_pressed = false,
+  send_composed_key_when_right_alt_is_pressed = false,
   inactive_pane_hsb = { saturation = 0.7, brightness = 0.7 },
   color_scheme = "Ayu Mirage (Gogh)",
   font = wezterm.font("Hack"),
@@ -63,8 +65,6 @@ return {
     { key = 'r',          mods = 'CTRL|SHIFT',  action = act.ActivateKeyTable { name = 'resize_pane', one_shot = false } },
     { key = 'f',          mods = 'CMD',         action = act.SplitVertical { domain = 'CurrentPaneDomain' }, },
     { key = 'd',          mods = 'CMD',         action = act.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
-    { key = 'h',          mods = 'CMD',         action = act.ActivatePaneDirection 'Left' },
-    { key = 'l',          mods = 'CMD',         action = act.ActivatePaneDirection 'Right' },
     { key = 't',          mods = 'CMD',         action = act.SpawnTab 'CurrentPaneDomain' },
     { key = 'w',          mods = 'CMD',         action = act.CloseCurrentTab { confirm = false } },
     { key = 'x',          mods = 'CMD',         action = act.CloseCurrentPane { confirm = false } },
@@ -74,7 +74,7 @@ return {
     { key = 'p',          mods = 'CTRL|SHIFT',  action = act.ActivateCommandPalette },
     {
       key = 'k',
-      mods = 'CTRL|ALT',
+      mods = 'CTRL|SHIFT',
       action = act.Multiple
           {
             act.ClearScrollback 'ScrollbackAndViewport',

@@ -7,6 +7,13 @@ line-number = "relative"
 mouse = false
 rulers = [80]
 
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.inline-diagnostics]
+cursor-line = "hint"
+other-lines = "error"
+
 [keys.normal]
 esc = ["collapse_selection", "keep_primary_selection"]
 A-r = ":reload-all"
@@ -20,24 +27,11 @@ C = ":bca!"
 
 [keys.normal.";"]
 b = ":sh hx_ide_wez blame"
-m = ":sh hx_ide_wez md-preview"
 e = ":sh hx_ide_wez explorer"
-t = ":sh hx_ide_wez test"
-s = ":sh hx_ide_wez search"
-p = ":sh hx_ide_wez pane"
-l = ":sh hx_ide_wez lint"
 f = ":sh hx_ide_wez cfp"
-
-[editor.cursor-shape]
-insert = "bar"
-
-[editor.file-picker]
-git-ignore = false
-
-[editor.inline-diagnostics]
-cursor-line = "hint"
-other-lines = "error"
-
-[editor.lsp]
-display-inlay-hints = true
-
+i = ":toggle-option file-picker.git-ignore"
+l = ":sh hx_ide_wez lint"
+m = ":sh hx_ide_wez md-preview"
+p = ":sh hx_ide_wez pane"
+s = ":sh hx_ide_wez search"
+t = ":sh hx_ide_wez test"

@@ -192,6 +192,12 @@ on-mode-changed = []
     ctrl-alt-up = 'move up'
     ctrl-alt-right = 'move right'
 
+    # Focus window in direction
+    ctrl-alt-shift-left = 'focus left'
+    ctrl-alt-shift-down = 'focus down'
+    ctrl-alt-shift-up = 'focus up'
+    ctrl-alt-shift-right = 'focus right'
+
     # Join-with direction
     ctrl-alt-h = ['join-with left', 'mode main']
     ctrl-alt-j = ['join-with down', 'mode main']

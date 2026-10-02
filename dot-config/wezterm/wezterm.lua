@@ -72,6 +72,7 @@ return {
     { key = 'Enter',      mods = 'LEADER',      action = act.ActivateCopyMode },
     { key = 'p',          mods = 'LEADER',      action = act.PasteFrom 'PrimarySelection' },
     { key = 'p',          mods = 'CTRL|SHIFT',  action = act.ActivateCommandPalette },
+    { key = 'p',          mods = 'CMD',         action = act.ShowLauncherArgs { flags = 'FUZZY|WORKSPACES' } },
     {
       key = 'k',
       mods = 'CTRL|SHIFT',
